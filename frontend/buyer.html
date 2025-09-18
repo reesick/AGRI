@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - Crop Contract App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>🛒 Buyer Dashboard</h1>
+                <span id="buyerName" class="user-name"></span>
+            </div>
+            <div class="header-right">
+                <div class="wallet-info">
+                    <span>Wallet: ₹<span id="walletBalance">0.00</span></span>
+                    <button class="btn btn-small" onclick="showAddFunds()">Add Funds</button>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <nav class="dashboard-nav">
+            <button class="nav-btn active" onclick="showSection('marketplace')">Marketplace</button>
+            <button class="nav-btn" onclick="showSection('my-proposals')">My Proposals</button>
+            <button class="nav-btn" onclick="showSection('contracts')">Contracts</button>
+        </nav>
+
+        <!-- Marketplace Section -->
+        <div id="marketplace" class="section active">
+            <div class="section-header">
+                <h2>Available Crops</h2>
+                <div class="search-filter">
+                    <input type="text" id="searchInput" placeholder="Search crops..." onkeyup="filterListings()">
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="marketplaceTable">
+                    <thead>
+                        <tr>
+                            <th>Farmer</th>
+                            <th>Crop Type</th>
+                            <th>Quantity</th>
+                            <th>Delivery Date</th>
+                            <th>Expected Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="marketplaceEmpty">
+                    <p>No crops available at the moment.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Proposals Section -->
+        <div id="my-proposals" class="section">
+            <div class="section-header">
+                <h2>My Proposals</h2>
+            </div>
+            <div class="table-container">
+                <table id="proposalsTable">
+                    <thead>
+                        <tr>
+                            <th>Crop Type</th>
+                            <th>Farmer</th>
+                            <th>My Price</th>
+                            <th>Payment Terms</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="proposalsEmpty">
+                    <p>No proposals sent yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contracts Section -->
+        <div id="contracts" class="section">
+            <div class="section-header">
+                <h2>My Contracts</h2>
+            </div>
+            <div class="table-container">
+                <table id="contractsTable">
+                    <thead>
+                        <tr>
+                            <th>Crop Type</th>
+                            <th>Farmer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="contractsEmpty">
+                    <p>No contracts yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Proposal Modal -->
+        <div id="proposalModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Make Proposal</h2>
+                <form id="proposalForm">
+                    <div id="cropDetails" class="crop-details"></div>
+                    <div class="form-group">
+                        <label for="proposalPrice">Your Offer (₹):</label>
+                        <input type="number" id="proposalPrice" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentTerms">Payment Terms:</label>
+                        <select id="paymentTerms" required>
+                            <option value="">Select payment terms</option>
+                            <option value="immediate">Immediate payment</option>
+                            <option value="on_delivery">Payment on delivery</option>
+                            <option value="30_days">30 days credit</option>
+                            <option value="custom">Custom terms</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="customTermsGroup" style="display: none;">
+                        <label for="customTerms">Custom Terms:</label>
+                        <textarea id="customTerms" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Send Proposal</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Funds Modal -->
+        <div id="addFundsModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Add Funds to Wallet</h2>
+                <form id="addFundsForm">
+                    <div class="form-group">
+                        <label for="fundAmount">Amount (₹):</label>
+                        <input type="number" id="fundAmount" required min="1" step="0.01">
+                    </div>
+                    <div class="wallet-note">
+                        <p><strong>Note:</strong> This is a demo wallet. In a real application, this would integrate with payment gateways.</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Add Funds</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contract Modal -->
+        <div id="contractModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Contract Details</h2>
+                <div id="contractContent"></div>
+                <div class="modal-actions">
+                    <button id="signContractBtn" class="btn btn-primary">Sign Contract</button>
+                    <button id="downloadContractBtn" class="btn btn-secondary">Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize buyer dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBuyerDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - Crop Contract App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>🌾 Farmer Dashboard</h1>
+                <span id="farmerName" class="user-name"></span>
+            </div>
+            <div class="header-right">
+                <div class="wallet-info">
+                    <span>Wallet: ₹<span id="walletBalance">0.00</span></span>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <nav class="dashboard-nav">
+            <button class="nav-btn active" onclick="showSection('listings')">My Listings</button>
+            <button class="nav-btn" onclick="showSection('proposals')">Proposals</button>
+            <button class="nav-btn" onclick="showSection('contracts')">Contracts</button>
+            <button class="nav-btn" onclick="showSection('create-listing')">Add Listing</button>
+        </nav>
+
+        <!-- My Listings Section -->
+        <div id="listings" class="section active">
+            <div class="section-header">
+                <h2>My Crop Listings</h2>
+                <button class="btn btn-primary" onclick="showSection('create-listing')">+ New Listing</button>
+            </div>
+            <div class="table-container">
+                <table id="listingsTable">
+                    <thead>
+                        <tr>
+                            <th>Crop Type</th>
+                            <th>Quantity</th>
+                            <th>Delivery Date</th>
+                            <th>Expected Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="listingsEmpty">
+                    <p>No listings found. Create your first listing!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proposals Section -->
+        <div id="proposals" class="section">
+            <div class="section-header">
+                <h2>Received Proposals</h2>
+            </div>
+            <div class="table-container">
+                <table id="proposalsTable">
+                    <thead>
+                        <tr>
+                            <th>Crop Type</th>
+                            <th>Buyer</th>
+                            <th>Proposed Price</th>
+                            <th>Payment Terms</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="proposalsEmpty">
+                    <p>No proposals received yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contracts Section -->
+        <div id="contracts" class="section">
+            <div class="section-header">
+                <h2>My Contracts</h2>
+            </div>
+            <div class="table-container">
+                <table id="contractsTable">
+                    <thead>
+                        <tr>
+                            <th>Crop Type</th>
+                            <th>Buyer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state" id="contractsEmpty">
+                    <p>No contracts yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Listing Section -->
+        <div id="create-listing" class="section">
+            <div class="section-header">
+                <h2>Create New Listing</h2>
+            </div>
+            <div class="form-container">
+                <form id="listingForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cropType">Crop Type:</label>
+                            <input type="text" id="cropType" required placeholder="e.g. Rice, Wheat, Sugarcane">
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity">Quantity (kg):</label>
+                            <input type="number" id="quantity" required min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deliveryDate">Delivery Date:</label>
+                            <input type="date" id="deliveryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expectedPrice">Expected Price (₹):</label>
+                            <input type="number" id="expectedPrice" required min="0" step="0.01">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Listing</button>
+                    <button type="button" class="btn btn-secondary" onclick="showSection('listings')">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Contract Modal -->
+        <div id="contractModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Contract Details</h2>
+                <div id="contractContent"></div>
+                <div class="modal-actions">
+                    <button id="signContractBtn" class="btn btn-primary">Sign Contract</button>
+                    <button id="downloadContractBtn" class="btn btn-secondary">Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize farmer dashboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFarmerDashboard();
+        });
+    </script>
+</body>
+</html>

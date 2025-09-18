@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Contract App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌾 Crop Contract Platform</h1>
+            <p>Connect farmers and buyers with AI-powered contracts</p>
+        </header>
+
+        <!-- Landing Page -->
+        <div id="landingPage" class="page active">
+            <div class="hero">
+                <h2>Welcome to Crop Contract Platform</h2>
+                <p>A secure marketplace for farmers and buyers to create, sign, and manage crop contracts.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showLogin()">Login</button>
+                    <button class="btn btn-secondary" onclick="showSignup()">Sign Up</button>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <h3>🌱 For Farmers</h3>
+                    <p>List your crops, receive proposals, and get paid securely</p>
+                </div>
+                <div class="feature">
+                    <h3>🛒 For Buyers</h3>
+                    <p>Find quality crops, make offers, and secure your supply</p>
+                </div>
+                <div class="feature">
+                    <h3>🤖 AI Contracts</h3>
+                    <p>Automatically generated legal contracts using AI</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginPage" class="page">
+            <div class="form-container">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email:</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+                <p><a href="#" onclick="showLanding()">← Back to home</a></p>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupPage" class="page">
+            <div class="form-container">
+                <h2>Sign Up</h2>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">Full Name:</label>
+                        <input type="text" id="signupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email:</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password:</label>
+                        <input type="password" id="signupPassword" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="userRole">I am a:</label>
+                        <select id="userRole" required>
+                            <option value="">Select role</option>
+                            <option value="farmer">Farmer (Seller)</option>
+                            <option value="buyer">Buyer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </form>
+                <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+                <p><a href="#" onclick="showLanding()">← Back to home</a></p>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
